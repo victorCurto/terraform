@@ -31,7 +31,14 @@ Instructions: https://developer.hashicorp.com/terraform/downloads
 ```
 $ terraform version
 
+// terraform init will pickup the versions on terraform.lock.hcl is exists
 $ terraform init
+// terraform will update the versions on terraform.lock.hcl
+$ terraform init -upgrade
+
+//Format the terraform file with default
+$ terraform fmt
+
 
 // specify a plan
 $ terraform plan
@@ -49,16 +56,27 @@ $ terraform plan -out=myplan.tfplan
 $ terraform apply ./myplan.tfplan
 ```
 
+
+
+
+### terraform structure folder/files
+- TERRAFORM/ -> contains all the providers (binaries) that the project needs
+- terraform.tfstate -> contains the current state of the project
+- terraform.lock.hcl -> it's a lock version (used like in npm) that locking external dependencies, like providers, modules. Created when terraform init
+
+
 ## Glossary
 - IAM - Identity and Access Management
 - AMI - Amazon Machine Images
 - EC2 - Elastic Compute Cloud
 - S3 - Simple Storage Service
+- vpc - Virtual private clouds
+    - subnet - is a range of IP addresses in your VPC.
 
 ## Documentation
 https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance
 
 ## ToDo
-next - 21
+next - 32
 
 https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/guides/getting-started

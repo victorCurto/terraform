@@ -1,6 +1,8 @@
 ### Terraform ###
 .terraform/
-.terraform.lock.hcl
+
+# must be checked in, and when I run terraform init again it will Picks versions from lock file
+#.terraform.lock.hcl 
 
 myplan.tfplan
 terraform.tfstate
