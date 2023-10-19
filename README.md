@@ -30,7 +30,11 @@ Instructions: https://developer.hashicorp.com/terraform/downloads
 
 ```
 $ terraform version
+```
 
+###  Run terraform
+
+```
 // terraform init will pickup the versions on terraform.lock.hcl is exists
 $ terraform init
 // terraform will update the versions on terraform.lock.hcl
@@ -45,6 +49,8 @@ $ terraform plan
 
 // run the plan and perform the actions
 $ terraform apply
+// if we just want to see the output
+$ terraform output
 
 // remove all the instances that terraform create
 $ terraform destroy
@@ -56,13 +62,36 @@ $ terraform plan -out=myplan.tfplan
 $ terraform apply ./myplan.tfplan
 ```
 
-
-
-
 ### terraform structure folder/files
 - TERRAFORM/ -> contains all the providers (binaries) that the project needs
 - terraform.tfstate -> contains the current state of the project
 - terraform.lock.hcl -> it's a lock version (used like in npm) that locking external dependencies, like providers, modules. Created when terraform init
+
+
+### terraform best practives
+
+1) Create a separated file for input and output variables but this files must be in the same folder
+    - variable.tf
+    - output.tf
+2) Create a special file 'terraform.tfvars' that will contains key=value pairs of the default values of variables (we don't need to specify the default value in the variable.tf file)
+    - terraform.tfvars
+
+3) Use Local variables<br>
+    Ex.
+    ```
+    locals {
+        http_port = 80
+    }
+
+    ....
+    port = local.http_port //To use a local variable
+    ....
+    ```
+----
+Terraform objects:
+- var.
+- local.
+- each.
 
 
 ## Glossary
@@ -72,6 +101,21 @@ $ terraform apply ./myplan.tfplan
 - S3 - Simple Storage Service
 - vpc - Virtual private clouds
     - subnet - is a range of IP addresses in your VPC.
+
+----
+## Syntax element - String Interpolation 
+Using variables inside strings: "${...}"
+```
+....
+  tags = {
+    Name = "ec2-${var.app_tag_name}"
+  }
+.... 
+```
+Ex. Tag names based on resource
+- EC2 tag - "ec2-app"
+- Security group - "sg-app"
+
 
 ## Documentation
 https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance

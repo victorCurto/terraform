@@ -28,18 +28,13 @@ provider "aws" {
   region  = "us-west-2"
 }
 
+
 /*
--> Input variables
-Reusable values of different data types (used with var namespace):
-- it will ask you if you don't provide a default; 
-Runtime values:
-- you can provide via CLI args (-var "var_name=val"); 
-- you can provide via Environment variables (TF_VAR_<var_name>);
+-> Output variables: ex. get a property from an existent resource
 */
-variable "app_tag_name" {
-  description = "Enter tag name for all resources"
-  type        = string
-  #default     = "app" // if you don't specify the default it will ask or you need to 
+output "public_ip" {
+  value       = aws_instance.app_server.public_ip
+  description = "The public IP address of the web server"
 }
 
 
@@ -47,19 +42,51 @@ variable "app_tag_name" {
 => resources block - resource "type" "name" 
 */
 resource "aws_instance" "app_server" {
-  ami           = "ami-03f65b8614a860c29"
-  instance_type = "t2.micro"
+  ami                    = "ami-03f65b8614a860c29"
+  instance_type          = "t2.micro"
+  vpc_security_group_ids = [aws_security_group.allow_port_8080.id]
+  //user_data enables you to execute commands, and '<<-EOF ....EOF' execute blocks of commands
+  user_data = <<-EOF
+        #!/bin/bash
+        echo "<h1>My server is up!</h1>" > index.html
+        nohup busybox httpd -f -p ${var.port_number}
+      EOF
   //tags specify the name in aws resources
   tags = {
-    Name = var.app_tag_name
+    Name = "ec2-${var.app_tag_name}"
   }
 }
 
-//resource "aws_s3_bucket" "my_bucket" {}
 
+resource "aws_security_group" "allow_port_8080" {
+  name        = "allow_port_8080"
+  description = "Allow 8080 inbound traffic"
+
+  ingress {
+    from_port   = var.port_number
+    to_port     = var.port_number
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags = {
+    Name = "sg-${var.app_tag_name}"
+  }
+
+}
+
+
+
+
+resource "aws_s3_bucket" "bucket" {
+  count = 2 //count property and index
+  bucket = "2022010145-app-image-bucket-${count.index}"
+}
+
+/*
 resource "aws_vpc" "app_vpc" {
   cidr_block = "10.0.0.0/16"
   tags = {
     Name = var.app_tag_name
   }
 }
+*/
