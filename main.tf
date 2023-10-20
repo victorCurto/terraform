@@ -15,6 +15,11 @@ terraform {
   }
 }
 
+# import other modules
+module "my-s3-module" {
+  source = "./modules/s3-module"
+  bucket_name = "passing_input_variable_to_module"
+}
 
 /*
 => provider block - provider "local_name"
@@ -37,6 +42,28 @@ output "public_ip" {
   description = "The public IP address of the web server"
 }
 
+/*
+-> Data variables: enable us to perform queries against the provider to get some data
+to access: data.aws_vpc.default
+*/
+/*
+data "aws_vpc" "default" {
+  default = true
+}
+data "aws_subnet_ids" "subnet_ids" {
+  vpc_id = data.aws_vpc.default.id
+}
+
+output "aws_default_vpc_info" {
+  value = data.aws_vpc.default
+  description = "info about default VPC"
+}
+
+output "aws_default_vpc_subnet_ids" {
+  value = data.aws_subnet_ids.subnet_ids
+  description = "Subnet IDs"
+}
+*/
 
 /*
 => resources block - resource "type" "name" 
@@ -72,14 +99,6 @@ resource "aws_security_group" "allow_port_8080" {
     Name = "sg-${var.app_tag_name}"
   }
 
-}
-
-
-
-
-resource "aws_s3_bucket" "bucket" {
-  count = 2 //count property and index
-  bucket = "2022010145-app-image-bucket-${count.index}"
 }
 
 /*

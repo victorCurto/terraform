@@ -7,3 +7,4 @@
 myplan.tfplan
 terraform.tfstate
 terraform.tfstate.backup
+*.dot
